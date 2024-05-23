@@ -3,39 +3,30 @@ using Windows.Win32.Storage.Vhd;
 
 public static class VhdMethods
 {
-    // I couldn't figure out how to import this via CsWin32.
-    //
-    // http://msdn.microsoft.com/en-us/library/dd323704(VS.85).aspx
-    public static class VIRTUAL_STORAGE_TYPE_VENDOR
-    {
-        public static readonly Guid VIRTUAL_STORAGE_TYPE_VENDOR_MICROSOFT = new Guid( "EC984AEC-A0F9-47e9-901F-71415A66345B" );
-        public static readonly Guid VIRTUAL_STORAGE_TYPE_VENDOR_UNKNOWN = Guid.Empty;
-    }
-
     // Given the file name, returns the storage type for opening.
     private static VIRTUAL_STORAGE_TYPE GetStorageType(string vhdFileName)
     {
         var storageType = new VIRTUAL_STORAGE_TYPE();
-        storageType.VendorId = VIRTUAL_STORAGE_TYPE_VENDOR.VIRTUAL_STORAGE_TYPE_VENDOR_MICROSOFT;
+        storageType.VendorId = PInvoke.VIRTUAL_STORAGE_TYPE_VENDOR_MICROSOFT;
 
         string extension = Path.GetExtension(vhdFileName);
         var cmp = StringComparer.OrdinalIgnoreCase;
 
         if (cmp.Equals(extension, ".vhdx"))
         {
-            storageType.DeviceId = VHD_STORAGE_TYPE_DEVICE.VIRTUAL_STORAGE_TYPE_DEVICE_VHDX;
+            storageType.DeviceId = PInvoke.VIRTUAL_STORAGE_TYPE_DEVICE_VHDX;
         }
         else if (cmp.Equals(extension, ".vhd"))
         {
-            storageType.DeviceId = VHD_STORAGE_TYPE_DEVICE.VIRTUAL_STORAGE_TYPE_DEVICE_VHD;
+            storageType.DeviceId = PInvoke.VIRTUAL_STORAGE_TYPE_DEVICE_VHD;
         }
         else if (cmp.Equals(extension, ".iso"))
         {
-            storageType.DeviceId = VHD_STORAGE_TYPE_DEVICE.VIRTUAL_STORAGE_TYPE_DEVICE_ISO;
+            storageType.DeviceId = PInvoke.VIRTUAL_STORAGE_TYPE_DEVICE_ISO;
         }
         else
         {
-            storageType.DeviceId = VHD_STORAGE_TYPE_DEVICE.VIRTUAL_STORAGE_TYPE_DEVICE_UNKNOWN;
+            storageType.DeviceId = PInvoke.VIRTUAL_STORAGE_TYPE_DEVICE_UNKNOWN;
         }
 
         return storageType;
@@ -76,7 +67,7 @@ public static class VhdMethods
             var attachFlags = ATTACH_VIRTUAL_DISK_FLAG.ATTACH_VIRTUAL_DISK_FLAG_AT_BOOT |
                                 ATTACH_VIRTUAL_DISK_FLAG.ATTACH_VIRTUAL_DISK_FLAG_PERMANENT_LIFETIME;
 
-            error = AttachVirtualDisk(diskHandle,
+            error = PInvoke.AttachVirtualDisk(diskHandle,
                                         IntPtr.Zero,     // security descriptor
                                         attachFlags,
                                         0,               // provider-specific flags
