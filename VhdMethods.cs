@@ -1,4 +1,6 @@
+using Microsoft.Win32.SafeHandles;
 using Windows.Win32;
+using Windows.Win32.Security;
 using Windows.Win32.Storage.Vhd;
 
 public static class VhdMethods
@@ -48,15 +50,15 @@ public static class VhdMethods
         OPEN_VIRTUAL_DISK_FLAG openFlags = OPEN_VIRTUAL_DISK_FLAG.OPEN_VIRTUAL_DISK_FLAG_NONE;
         SafeFileHandle diskHandle;
 
-        int error = PInvoke.OpenVirtualDisk(ref storageType,
+        var error = PInvoke.OpenVirtualDisk(storageType,
                                         vhdPath,
                                         accessMask,
                                         openFlags,
-                                        ref openParams,
+                                        openParams,
                                         out diskHandle);
         if (error != 0)
         {
-            throw new System.ComponentModel.Win32Exception(error);
+            throw new System.ComponentModel.Win32Exception((int)error);
         }
 
         using (diskHandle)
@@ -68,17 +70,17 @@ public static class VhdMethods
                                 ATTACH_VIRTUAL_DISK_FLAG.ATTACH_VIRTUAL_DISK_FLAG_PERMANENT_LIFETIME;
 
             error = PInvoke.AttachVirtualDisk(diskHandle,
-                                        IntPtr.Zero,     // security descriptor
+                                        new(),     // security descriptor
                                         attachFlags,
                                         0,               // provider-specific flags
-                                        ref attachParameters,
-                                        IntPtr.Zero);   // overlapped
+                                        attachParameters,
+                                        null);   // overlapped
             if (error != 0)
             {
                 // You could get a sharing violation here (ERROR_SHARING_VIOLATION or
                 // equivalent) if the disk is already attached--in that case, you need
                 // to detach the disk first, then you can try again.
-                throw new System.ComponentModel.Win32Exception(error);
+                throw new System.ComponentModel.Win32Exception((int)error);
             }
         }
     }
