@@ -1,6 +1,5 @@
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32;
-using Windows.Win32.Security;
 using Windows.Win32.Storage.Vhd;
 
 public static class VhdMethods

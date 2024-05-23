@@ -1,5 +1,11 @@
-﻿
-// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿if (args.Length == 0)
+{
+    Console.WriteLine("Marks a VHD so that it will be automatically attached at boot.");
+    Console.WriteLine();
+    Console.WriteLine("Usage: programname.exe <path-to-vhd>");
+    return;
+}
 
-VhdMethods.MarkVhdAsAttachAtBoot("C:\\path\\to\\vhd.vhdx");
+var path = args[0];
+Console.WriteLine($"Marking VHD {path} as attach-at-boot...");
+VhdMethods.MarkVhdAsAttachAtBoot(path);
